@@ -1,0 +1,27 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+  background-image: url("/images/background.jpg");
+
+  .welcome-content {
+    max-width: 40rem;
+
+    .welcome-heading {
+      font-size: 3rem;
+      font-weight: 500;
+      color: white;
+    }
+    .welcome-message {
+      font-size: 1rem;
+      font-weight: 300;
+      color: white;
+      max-width: 20rem;
+    }
+  }
+}

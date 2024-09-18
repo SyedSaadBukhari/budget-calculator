@@ -1,66 +1,30 @@
 "use client";
 
 import React from "react";
-
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import {
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  Typography,
-  Link,
-} from "@mui/material";
-import { styled } from "@mui/system";
+import { Box, Button, TextField, Typography, Link } from "@mui/material";
 import TopBar from "../../components/TopBar/topBar";
+import "./reset-password.scss";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email format").required("Required"),
 });
 
-const Container = styled(Box)({
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  height: "100vh",
-  alignItems: "center",
-  justifyItems: "center",
-});
-
-const FormContainer = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
-  maxWidth: "600px",
-});
-
-const ImageContainer = styled(Box)({
-  width: "100%",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const Image = styled("img")({
-  maxWidth: "100%",
-  height: "auto",
-});
-
-const reset = () => {
+const Reset = () => {
   return (
-    <>
+    <main className="reset-container">
       <TopBar />
-      <Container>
-        <FormContainer>
+      <div className="container">
+        <div className="form-container">
           <Typography variant="h5" gutterBottom>
-            Reset Password{" "}
+            Reset Password
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
             Enter your email for a reset link
           </Typography>
           <Formik
-            initialValues={{ email: "", password: "", remember: false }}
+            initialValues={{ email: "" }}
             validationSchema={validationSchema}
             onSubmit={(values) => {
               console.log("Form Values:", values);
@@ -80,10 +44,7 @@ const reset = () => {
                   helperText={touched.email && errors.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  style={{
-                    backgroundColor: "#DDE4F0",
-                    border: "1px solid #DDE4F0",
-                  }}
+                  className="text-field"
                 />
 
                 <Button
@@ -91,37 +52,30 @@ const reset = () => {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  style={{ marginTop: "1rem", backgroundColor: "#7539FF" }}
+                  className="submit-button"
                 >
-                  Send Reset Password Link{" "}
+                  Send Reset Password Link
                 </Button>
-                <Typography
-                  variant="body2"
-                  align="center"
-                  style={{ marginTop: "1rem" }}
-                >
+                <Typography variant="body2" className="link">
                   Don’t have an account?{" "}
-                  <Link
-                    href="/signup"
-                    underline="hover"
-                    style={{ color: "#7539FF" }}
-                  >
+                  <Link href="/signup" underline="hover" className="link">
                     Sign Up
                   </Link>
                 </Typography>
               </Form>
             )}
           </Formik>
-        </FormContainer>
-        <ImageContainer>
-          <Image
+        </div>
+        <div className="image-container">
+          <img
             src="/images/budget-tracker-Illustration.png"
             alt="Illustration"
+            className="image"
           />
-        </ImageContainer>
-      </Container>
-    </>
+        </div>
+      </div>
+    </main>
   );
 };
 
-export default reset;
+export default Reset;

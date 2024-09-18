@@ -1,12 +1,11 @@
 "use client";
 
 import React from "react";
-
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { Box, Button, TextField, Typography, Link } from "@mui/material";
-import { styled } from "@mui/system";
+import { TextField, Button, Typography, Link } from "@mui/material";
 import TopBar from "../../components/TopBar/topBar";
+import "./sign-up.scss"; // Import the CSS file
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email format").required("Required"),
@@ -15,41 +14,14 @@ const validationSchema = Yup.object({
     .required("Required"),
 });
 
-const Container = styled(Box)({
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  height: "100vh",
-  alignItems: "center",
-  justifyItems: "center",
-});
-
-const FormContainer = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
-  maxWidth: "600px",
-});
-
-const ImageContainer = styled(Box)({
-  width: "100%",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const Image = styled("img")({
-  maxWidth: "100%",
-  height: "auto",
-});
-
 const SignUp = () => {
   return (
-    <>
+    <main className="signup-container">
       <TopBar />
 
-      <Container>
-        <FormContainer>
-          <Typography variant="h5" gutterBottom>
+      <div className="container">
+        <div className="form-container">
+          <Typography variant="h3" gutterBottom>
             Sign Up
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
@@ -72,14 +44,7 @@ const SignUp = () => {
           >
             {({ errors, touched, handleChange, handleBlur }) => (
               <Form>
-                <article
-                  className="name"
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "1rem",
-                  }}
-                >
+                <article className="name">
                   <Field
                     as={TextField}
                     fullWidth
@@ -92,10 +57,7 @@ const SignUp = () => {
                     helperText={touched.firstName && errors.firstName}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    style={{
-                      backgroundColor: "#DDE4F0",
-                      border: "1px solid #DDE4F0",
-                    }}
+                    className="text-field"
                   />
                   <Field
                     as={TextField}
@@ -109,10 +71,7 @@ const SignUp = () => {
                     helperText={touched.lastName && errors.lastName}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    style={{
-                      backgroundColor: "#DDE4F0",
-                      border: "1px solid #DDE4F0",
-                    }}
+                    className="text-field"
                   />
                 </article>
                 <Field
@@ -127,10 +86,7 @@ const SignUp = () => {
                   helperText={touched.email && errors.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  style={{
-                    backgroundColor: "#DDE4F0",
-                    border: "1px solid #DDE4F0",
-                  }}
+                  className="text-field"
                 />
                 <Field
                   as={TextField}
@@ -144,17 +100,14 @@ const SignUp = () => {
                   helperText={touched.password && errors.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  style={{
-                    backgroundColor: "#DDE4F0",
-                    border: "1px solid #DDE4F0",
-                  }}
+                  className="text-field"
                 />
                 <Field
                   as={TextField}
                   fullWidth
                   margin="normal"
                   label="Confirm Password"
-                  name=" confirm password"
+                  name="confirmPassword"
                   type="password"
                   variant="outlined"
                   error={
@@ -163,27 +116,21 @@ const SignUp = () => {
                   helperText={touched.confirmPassword && errors.confirmPassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  style={{
-                    backgroundColor: "#DDE4F0",
-                    border: "1px solid #DDE4F0",
-                  }}
+                  className="text-field"
                 />
                 <Field
                   as={TextField}
                   fullWidth
                   margin="normal"
                   label="Budget Limit"
-                  name="budget Limit"
+                  name="budgetLimit"
                   type="text"
                   variant="outlined"
                   error={touched.budgetLimit && Boolean(errors.budgetLimit)}
                   helperText={touched.budgetLimit && errors.budgetLimit}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  style={{
-                    backgroundColor: "#DDE4F0",
-                    border: "1px solid #DDE4F0",
-                  }}
+                  className="text-field"
                 />
 
                 <Button
@@ -191,33 +138,25 @@ const SignUp = () => {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  style={{ marginTop: "1rem", backgroundColor: "#7539FF" }}
+                  className="submit-button"
                 >
                   SIGN UP
                 </Button>
-                <Typography
-                  variant="body2"
-                  align="center"
-                  style={{ marginTop: "1rem" }}
-                >
+                <Typography variant="body2" className="link">
                   Already have an account?{" "}
-                  <Link
-                    href="/login"
-                    underline="hover"
-                    style={{ color: "#7539FF" }}
-                  >
+                  <Link href="/login" underline="hover" className="link">
                     Log in
                   </Link>
                 </Typography>
               </Form>
             )}
           </Formik>
-        </FormContainer>
-        <ImageContainer>
-          <Image src="/images/signup.png" alt="Illustration" />
-        </ImageContainer>
-      </Container>
-    </>
+        </div>
+        <div className="image-container">
+          <img src="/images/signup.png" alt="Illustration" className="image" />
+        </div>
+      </div>
+    </main>
   );
 };
 

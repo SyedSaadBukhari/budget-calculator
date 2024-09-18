@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import {
@@ -13,8 +12,8 @@ import {
   Typography,
   Link,
 } from "@mui/material";
-import { styled } from "@mui/system";
 import TopBar from "../../components/TopBar/topBar";
+import "./login.scss";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Invalid email format").required("Required"),
@@ -23,41 +22,14 @@ const validationSchema = Yup.object({
     .required("Required"),
 });
 
-const Container = styled(Box)({
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  height: "100vh",
-  alignItems: "center",
-  justifyItems: "center",
-});
-
-const FormContainer = styled(Box)({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
-  maxWidth: "600px",
-});
-
-const ImageContainer = styled(Box)({
-  width: "100%",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-});
-
-const Image = styled("img")({
-  maxWidth: "100%",
-  height: "auto",
-});
-
 const Login = () => {
   return (
-    <>
+    <main className="login-container">
       <TopBar />
 
-      <Container>
-        <FormContainer>
-          <Typography variant="h5" gutterBottom>
+      <div className="container">
+        <div className="form-container">
+          <Typography variant="h3" gutterBottom>
             Welcome Back!
           </Typography>
           <Typography variant="subtitle1" gutterBottom>
@@ -84,10 +56,7 @@ const Login = () => {
                   helperText={touched.email && errors.email}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  style={{
-                    backgroundColor: "#DDE4F0",
-                    border: "1px solid #DDE4F0",
-                  }}
+                  className="text-field"
                 />
                 <Field
                   as={TextField}
@@ -101,10 +70,7 @@ const Login = () => {
                   helperText={touched.password && errors.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
-                  style={{
-                    backgroundColor: "#DDE4F0",
-                    border: "1px solid #DDE4F0",
-                  }}
+                  className="text-field"
                 />
                 <FormControlLabel
                   control={
@@ -116,7 +82,7 @@ const Login = () => {
                   <Link
                     href="/resetPassword"
                     underline="hover"
-                    style={{ color: "#7539FF" }}
+                    className="link"
                   >
                     Forgot Password?
                   </Link>
@@ -126,36 +92,25 @@ const Login = () => {
                   variant="contained"
                   color="primary"
                   fullWidth
-                  style={{ marginTop: "1rem", backgroundColor: "#7539FF" }}
+                  className="submit-button"
                 >
                   LOG IN
                 </Button>
-                <Typography
-                  variant="body2"
-                  align="center"
-                  style={{ marginTop: "1rem" }}
-                >
+                <Typography variant="body2" className="link">
                   Don’t have an account?{" "}
-                  <Link
-                    href="/signup"
-                    underline="hover"
-                    style={{ color: "#7539FF" }}
-                  >
+                  <Link href="/signup" underline="hover" className="link">
                     Sign Up
                   </Link>
                 </Typography>
               </Form>
             )}
           </Formik>
-        </FormContainer>
-        <ImageContainer>
-          <Image
-            src="/images/budget-tracker-Illustration.png"
-            alt="Illustration"
-          />
-        </ImageContainer>
-      </Container>
-    </>
+        </div>
+        <div className="image-container">
+          <img src="/images/signup.png" alt="Illustration" className="image" />
+        </div>
+      </div>
+    </main>
   );
 };
 
