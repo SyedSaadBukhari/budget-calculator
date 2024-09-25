@@ -12,6 +12,10 @@
   .welcome-content {
     max-width: 40rem;
 
+    @media screen and (max-width: 1023px) {
+      margin: 0 2rem;
+    }
+
     .welcome-heading {
       font-size: 3rem;
       font-weight: 500;

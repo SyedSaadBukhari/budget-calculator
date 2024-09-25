@@ -3,10 +3,7 @@
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  padding: 2rem 0;
-
-  .app-title {
-    font-weight: 700;
-    font-size: 2rem;
-  }
+  padding: 1rem 2rem;
+  justify-content: space-between;
+  background-color: white;
 }

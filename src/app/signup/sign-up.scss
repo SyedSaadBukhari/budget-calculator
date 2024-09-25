@@ -1,11 +1,13 @@
-/* SignUp.css */
-
 .signup-container {
   display: grid;
   grid-template-rows: auto 1fr;
   align-items: center;
   justify-content: center;
   height: 100vh;
+
+  @media screen and (max-width: 1024px) {
+    margin: 0 2rem;
+  }
 }
 
 .container {
@@ -14,6 +16,10 @@
   align-items: center;
   gap: 5rem;
   height: 100%;
+
+  @media screen and (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .form-container {

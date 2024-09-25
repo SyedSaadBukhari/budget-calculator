@@ -9,7 +9,14 @@ connect();
 export async function POST(request: NextRequest) {
   try {
     const reqBody = await request.json();
-    const { firstName, lastName, email, password } = reqBody;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      confirmPassword,
+      budgetLimit,
+    } = reqBody;
 
     console.log(reqBody);
 
@@ -22,6 +29,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (password !== confirmPassword) {
+      return NextResponse.json(
+        { error: "Passwords do not match" },
+        { status: 400 }
+      );
+    }
+
     const salt = await bcryptjs.genSalt(10);
     const hashedPassword = await bcryptjs.hash(password, salt);
 
@@ -30,6 +44,7 @@ export async function POST(request: NextRequest) {
       lastName,
       email,
       password: hashedPassword,
+      budgetLimit,
     });
 
     const savedUser = await newUser.save();

@@ -1,13 +1,16 @@
 import React from "react";
 
+import MenuBar from "../MenuBar/MenuBar";
+import Title from "../Title/Title";
+
 import "./topbar.scss";
 
 const TopBar = () => {
   return (
-    <article className="top-bar">
-      <img src="/images/budgest-tracker-icon.png" alt="Budget Tracker Logo" />
-      <h1 className="app-title">Budget Tracker</h1>
-    </article>
+    <section className="top-bar">
+      <Title />
+      <MenuBar />
+    </section>
   );
 };
 

@@ -19,20 +19,30 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    console.log("user exists");
+    console.log("User exists");
+
+    if (!user.isVerified) {
+      return NextResponse.json(
+        {
+          error:
+            "Your email has not been verified yet. Please check your inbox.",
+        },
+        { status: 400 }
+      );
+    }
 
     const validPassword = await bcryptjs.compare(password, user.password);
     if (!validPassword) {
       return NextResponse.json({ error: "Invalid password" }, { status: 400 });
     }
-    console.log(user);
+    console.log("Password is valid");
 
     const tokenData = {
       id: user._id,
       username: user.username,
       email: user.email,
     };
-    //create token
+
     const token = jwt.sign(tokenData, process.env.TOKEN_SECRET!, {
       expiresIn: "1d",
     });
@@ -44,6 +54,7 @@ export async function POST(request: NextRequest) {
     response.cookies.set("token", token, {
       httpOnly: true,
     });
+
     return response;
   } catch (error) {
     return NextResponse.json(

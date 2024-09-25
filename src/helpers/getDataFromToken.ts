@@ -6,7 +6,6 @@ export const getDataFromToken = (request: NextRequest) => {
     const token = request.cookies.get("token")?.value || "";
     interface DecodedToken {
       id: string;
-      // Add other properties from the token structure
     }
 
     const decodedToken: DecodedToken = jwt.verify(

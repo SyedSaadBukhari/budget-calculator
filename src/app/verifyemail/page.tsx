@@ -1,7 +1,11 @@
+"use client";
+
 import React from "react";
 
-const page = () => {
-  return <div></div>;
+import VerifyEmail from "./VerifyEmail";
+
+const VerifyEmailPage = () => {
+  return <VerifyEmail />;
 };
 
-export default page;
+export default VerifyEmailPage;

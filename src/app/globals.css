@@ -17,7 +17,7 @@
 body {
   margin: 0;
   color: var(--foreground);
-  background: rgb(255, 243, 252);
+  background: white;
   font-family: Arial, Helvetica, sans-serif;
 }
 

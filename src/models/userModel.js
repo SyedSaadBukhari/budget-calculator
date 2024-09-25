@@ -4,12 +4,12 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: [true, "Please provide first name"],
-    unique: true,
+    unique: false,
   },
   lastName: {
     type: String,
     required: [true, "Please provide last name"],
-    unique: true,
+    unique: false,
   },
   email: {
     type: String,
@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Please provide a password"],
+    unique: true,
+  },
+  budgetLimit: {
+    type: String,
+    required: [true, "Please provide a Budget limit"],
     unique: true,
   },
   isVerified: {
