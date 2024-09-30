@@ -19,10 +19,10 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Please provide a password"],
-    unique: true,
+    unique: false,
   },
   budgetLimit: {
-    type: String,
+    type: Number,
     required: [true, "Please provide a Budget limit"],
     unique: false,
   },
@@ -33,6 +33,9 @@ const userSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false,
+  },
+  fatherName: {
+    type: String,
   },
   jobTitle: {
     type: String,
@@ -64,7 +67,10 @@ const userSchema = new mongoose.Schema({
   gender: {
     type: String,
   },
-  about: {
+  aboutUser: {
+    type: String,
+  },
+  website: {
     type: String,
   },
   forgotPasswordToken: String,

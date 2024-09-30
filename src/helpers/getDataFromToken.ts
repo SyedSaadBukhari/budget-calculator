@@ -12,6 +12,7 @@ export const getDataFromToken = (request: NextRequest) => {
       token,
       process.env.TOKEN_SECRET!
     ) as DecodedToken;
+
     return decodedToken.id;
   } catch (error) {
     throw new Error((error as Error).message);

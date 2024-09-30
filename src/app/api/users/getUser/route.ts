@@ -15,6 +15,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    console.log("Is Admin:", user.isAdmin);
+
     return NextResponse.json({
       message: "User fetched successfully",
       user,

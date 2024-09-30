@@ -1,27 +1,32 @@
 import React from "react";
+
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import axios from "axios";
+
 import "./account-form.scss";
 
-const AccountForm = () => {
+const AccountForm = ({ user }) => {
   return (
     <Formik
       initialValues={{
-        firstName: "Brooklyn",
-        lastName: "Simmons",
-        jobTitle: "Simmons",
-        streetAddress: "78 South 34 North",
-        city: "North Orange",
-        state: "New York",
-        zipCode: "98766655",
-        completeAddress: "",
-        phoneNumber: "123-456-8945",
-        email: "4517 Washington Ave. Manchester, Kentucky 39495",
-        dateOfBirth: "9/05/99",
-        education: "Masters",
-        gender: "Female",
-        budget: "1000-500000",
+        firstName: user?.firstName || "",
+        lastName: user?.lastName || "",
+        fatherName: user?.fatherName || "",
+        jobTitle: user?.jobTitle || "",
+        streetAddress: user?.streetAddress || "",
+        city: user?.city || "",
+        state: user?.state || "",
+        zipCode: user?.zipCode || "",
+        completeAddress: user?.completeAddress || "",
+        phoneNumber: user?.phoneNumber || "",
+        email: user?.email || "",
+        website: user?.website || "",
+        dateOfBirth: user?.dateOfBirth || "",
+        education: user?.education || "",
+        gender: user?.gender || "",
+        budgetLimit: user?.budgetLimit || "",
+        aboutUser: user?.aboutUser || "",
       }}
       onSubmit={async (values) => {
         try {
@@ -39,7 +44,7 @@ const AccountForm = () => {
         }
       }}
     >
-      {() => (
+      {({ values, handleChange }) => (
         <Form className="account-form">
           <Box className="form-container">
             <Typography variant="h6" className="form-heading">
@@ -55,6 +60,8 @@ const AccountForm = () => {
                     as={TextField}
                     label="First Name"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.firstName}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -63,6 +70,18 @@ const AccountForm = () => {
                     as={TextField}
                     label="Last Name"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.lastName}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    name="fatherName"
+                    as={TextField}
+                    label="Father's Name"
+                    fullWidth
+                    onChange={handleChange}
+                    value={values.fatherName}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -71,6 +90,24 @@ const AccountForm = () => {
                     as={TextField}
                     label="Job Title"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.jobTitle}
+                  />
+                </Grid>
+              </Grid>
+            </Box>
+
+            <Box className="form-section">
+              <Typography variant="subtitle1">About</Typography>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <Field
+                    name="aboutUser"
+                    as={TextField}
+                    label="About"
+                    fullWidth
+                    onChange={handleChange}
+                    value={values.aboutUser}
                   />
                 </Grid>
               </Grid>
@@ -85,13 +122,29 @@ const AccountForm = () => {
                     as={TextField}
                     label="Street Address"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.streetAddress}
                   />
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <Field name="city" as={TextField} label="City" fullWidth />
+                  <Field
+                    name="city"
+                    as={TextField}
+                    label="City"
+                    fullWidth
+                    onChange={handleChange}
+                    value={values.city}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <Field name="state" as={TextField} label="State" fullWidth />
+                  <Field
+                    name="state"
+                    as={TextField}
+                    label="State"
+                    fullWidth
+                    onChange={handleChange}
+                    value={values.state}
+                  />
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <Field
@@ -99,6 +152,8 @@ const AccountForm = () => {
                     as={TextField}
                     label="Zip Code"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.zipCode}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -107,6 +162,8 @@ const AccountForm = () => {
                     as={TextField}
                     label="Complete Address"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.completeAddress}
                   />
                 </Grid>
               </Grid>
@@ -121,10 +178,29 @@ const AccountForm = () => {
                     as={TextField}
                     label="Phone Number"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.phoneNumber}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <Field name="email" as={TextField} label="Email" fullWidth />
+                  <Field
+                    name="email"
+                    as={TextField}
+                    label="Email"
+                    fullWidth
+                    onChange={handleChange}
+                    value={values.email}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Field
+                    name="website"
+                    as={TextField}
+                    label="Website"
+                    fullWidth
+                    onChange={handleChange}
+                    value={values.website}
+                  />
                 </Grid>
               </Grid>
             </Box>
@@ -138,6 +214,8 @@ const AccountForm = () => {
                     as={TextField}
                     label="Date of Birth"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.dateOfBirth}
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -146,6 +224,8 @@ const AccountForm = () => {
                     as={TextField}
                     label="Education"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.education}
                   />
                 </Grid>
                 <Grid item xs={12} sm={4}>
@@ -154,6 +234,8 @@ const AccountForm = () => {
                     as={TextField}
                     label="Gender"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.gender}
                   />
                 </Grid>
               </Grid>
@@ -168,6 +250,8 @@ const AccountForm = () => {
                     as={TextField}
                     label="Budget (PKR)"
                     fullWidth
+                    onChange={handleChange}
+                    value={values.budgetLimit}
                   />
                 </Grid>
               </Grid>

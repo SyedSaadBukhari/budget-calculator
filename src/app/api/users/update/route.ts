@@ -15,6 +15,7 @@ export async function PUT(request: NextRequest) {
       {
         firstName: reqBody.firstName,
         lastName: reqBody.lastName,
+        fatherName: reqBody.fatherName,
         email: reqBody.email,
         budgetLimit: reqBody.budgetLimit,
         jobTitle: reqBody.jobTitle,
@@ -27,7 +28,8 @@ export async function PUT(request: NextRequest) {
         dateOfBirth: reqBody.dateOfBirth,
         education: reqBody.education,
         gender: reqBody.gender,
-        about: reqBody.about,
+        aboutUser: reqBody.aboutUser,
+        website: reqBody.website,
       },
       { new: true, runValidators: true }
     );

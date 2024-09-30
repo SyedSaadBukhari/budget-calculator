@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       password,
       confirmPassword,
       budgetLimit,
+      isAdmin,
     } = reqBody;
 
     console.log(reqBody);
@@ -45,6 +46,7 @@ export async function POST(request: NextRequest) {
       email,
       password: hashedPassword,
       budgetLimit,
+      isAdmin: isAdmin || false,
     });
 
     const savedUser = await newUser.save();

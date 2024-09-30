@@ -17,25 +17,25 @@ import LanguageIcon from "@mui/icons-material/Language";
 
 import "./basic-info.scss";
 
-const BasicInfo = () => {
+const BasicInfo = ({ user }) => {
   return (
     <Card>
       <CardContent>
         <section className="info-header">
           <Avatar
-            alt="Cameron Williamson"
-            src="https://via.placeholder.com/150"
+            alt={user?.firstName || "User"}
+            src={user?.profilePicture || "https://via.placeholder.com/150"}
             className="avatar"
           />
           <Typography variant="h6" className="profile-title">
-            Cameron Williamson
+            {user ? `${user.firstName} ${user.lastName}` : "Loading..."}
           </Typography>
           <Typography
             variant="subtitle1"
             color="text.secondary"
             className="profile-subtitle"
           >
-            Project Manager
+            {user?.jobTitle || "Job Title"}
           </Typography>
         </section>
 
@@ -44,25 +44,25 @@ const BasicInfo = () => {
             <ListItemIcon>
               <PhoneIcon />
             </ListItemIcon>
-            <ListItemText primary="(684) 555-0102" />
+            <ListItemText primary={user?.phoneNumber || "Phone Number"} />
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <EmailIcon />
             </ListItemIcon>
-            <ListItemText primary="tim.jennings@example.com" />
+            <ListItemText primary={user?.email || "Email"} />
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <LocationOnIcon />
             </ListItemIcon>
-            <ListItemText primary="New York" />
+            <ListItemText primary={user?.completeAddress || "Address"} />
           </ListItem>
           <ListItem>
             <ListItemIcon>
               <LanguageIcon />
             </ListItemIcon>
-            <ListItemText primary="www.websitename.com" />
+            <ListItemText primary={user?.website || "Website"} />
           </ListItem>
         </List>
       </CardContent>

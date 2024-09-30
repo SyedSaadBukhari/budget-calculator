@@ -1,6 +1,10 @@
-import React from "react";
-
+import React, { useState } from "react";
 import {
+  Box,
+  Button,
+  MenuItem,
+  Select,
+  TextField,
   Table,
   TableBody,
   TableCell,
@@ -11,18 +15,34 @@ import {
   IconButton,
   LinearProgress,
   Typography,
-  Box,
   Pagination,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import ExpenseForm from "../../../components/ExpenseForm/ExpenseForm";
 
 const ExpensesTable = ({
   expenses,
   currentPage,
   rowsPerPage,
   handlePageChange,
+  onExpenseAdded,
+  userId,
 }) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+  };
+
+  const handleAddExpense = (newExpense) => {
+    onExpenseAdded(newExpense);
+  };
+
   const paginatedExpenses = expenses.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
@@ -30,6 +50,41 @@ const ExpensesTable = ({
 
   return (
     <>
+      <Box display="flex" justifyContent="flex-end" alignItems="center">
+        <Button
+          variant="contained"
+          onClick={handleOpenDialog}
+          style={{
+            backgroundColor: "#6C63FF",
+            marginBottom: "20px",
+          }}
+        >
+          Add Expenses
+        </Button>
+      </Box>
+
+      <ExpenseForm
+        open={dialogOpen}
+        handleClose={handleCloseDialog}
+        onExpenseAdded={handleAddExpense}
+        userId={userId}
+      />
+
+      <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
+        <Box display="flex" gap={1}>
+          <Select size="small" defaultValue="All">
+            <MenuItem value="All">Sort By</MenuItem>
+            <MenuItem value="Date">Date</MenuItem>
+            <MenuItem value="User">User</MenuItem>
+          </Select>
+          <Select size="small" defaultValue="All">
+            <MenuItem value="All">By Date</MenuItem>
+          </Select>
+          <TextField size="small" type="date" variant="outlined" />
+          <TextField size="small" placeholder="Search" variant="outlined" />
+        </Box>
+      </Box>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -79,14 +134,10 @@ const ExpensesTable = ({
       </TableContainer>
 
       <Box display="flex" justifyContent="space-between" mt={2}>
-        <Typography>
-          Showing {paginatedExpenses.length} / {expenses.length}
-        </Typography>
         <Pagination
           count={Math.ceil(expenses.length / rowsPerPage)}
           page={currentPage}
           onChange={handlePageChange}
-          color="primary"
         />
       </Box>
     </>
