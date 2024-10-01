@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import {
   Table,
   TableBody,
@@ -19,6 +18,7 @@ import {
   Button,
   TextField,
   Grid,
+  Snackbar,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -31,20 +31,26 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("/api/users/userList");
-        setUsers(response.data.users);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        setLoading(false);
-      }
-    };
     fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get("/api/users/userList");
+      setUsers(response.data.users);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(false);
+    }
+  };
 
   const handleEditClick = (user) => {
     setSelectedUser(user);
@@ -58,15 +64,69 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
 
   const handleFormSubmit = async (values) => {
     try {
-      await axios.put(`/api/users/update/${selectedUser._id}`, values);
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user._id === selectedUser._id ? { ...user, ...values } : user
-        )
+      const response = await axios.put(
+        `/api/users/adminUserUpdate/${selectedUser.id}`,
+        {
+          ...values,
+          isAdmin: values.role === "admin",
+        }
       );
-      handleDialogClose();
+
+      if (response.data.user) {
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.id === selectedUser.id
+              ? {
+                  ...user,
+                  ...response.data.user,
+                  role: response.data.user.isAdmin ? "admin" : "user",
+                }
+              : user
+          )
+        );
+        handleDialogClose();
+        setSnackbar({
+          open: true,
+          message: "User updated successfully",
+          severity: "success",
+        });
+      } else {
+        throw new Error(response.data.error || "Failed to update user");
+      }
     } catch (error) {
       console.error("Error updating user:", error);
+      setSnackbar({
+        open: true,
+        message: error.message || "Error updating user",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleDeleteUser = async (userId) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        const response = await axios.delete(`/api/users/deleteUser/${userId}`);
+        if (response.data.success) {
+          setUsers((prevUsers) =>
+            prevUsers.filter((user) => user.id !== userId)
+          );
+          setSnackbar({
+            open: true,
+            message: "User deleted successfully",
+            severity: "success",
+          });
+        } else {
+          throw new Error(response.data.error || "Failed to delete user");
+        }
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        setSnackbar({
+          open: true,
+          message: error.message || "Error deleting user",
+          severity: "error",
+        });
+      }
     }
   };
 
@@ -95,7 +155,7 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
           </TableHead>
           <TableBody>
             {paginatedUsers.map((row) => (
-              <TableRow key={row._id}>
+              <TableRow key={row.id}>
                 <TableCell>{row.firstName}</TableCell>
                 <TableCell>{row.lastName}</TableCell>
                 <TableCell>{row.email}</TableCell>
@@ -108,7 +168,10 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton color="secondary">
+                  <IconButton
+                    color="secondary"
+                    onClick={() => handleDeleteUser(row.id)}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -138,18 +201,18 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
               initialValues={{
                 firstName: selectedUser.firstName || "",
                 lastName: selectedUser.lastName || "",
-                phoneNumber: selectedUser.phoneNumber || "",
-                budgetLimit: selectedUser.budgetLimit || "",
-                email: selectedUser.email || "",
+                phoneNumber: selectedUser.number || "",
+                role: selectedUser.role || "user",
               }}
               validationSchema={Yup.object({
                 firstName: Yup.string().required("First name is required"),
                 lastName: Yup.string().required("Last name is required"),
-                number: Yup.string().required("Number is required"),
+                phoneNumber: Yup.string().required("Phone number is required"),
+                role: Yup.string().oneOf(["user", "admin"], "Invalid role"),
               })}
               onSubmit={handleFormSubmit}
             >
-              {({ values, handleChange }) => (
+              {({ values, handleChange, errors, touched }) => (
                 <Form>
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
@@ -160,6 +223,8 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
                         fullWidth
                         value={values.firstName}
                         onChange={handleChange}
+                        error={touched.firstName && errors.firstName}
+                        helperText={touched.firstName && errors.firstName}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -170,13 +235,15 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
                         fullWidth
                         value={values.lastName}
                         onChange={handleChange}
+                        error={touched.lastName && errors.lastName}
+                        helperText={touched.lastName && errors.lastName}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={12}>
+                    <Grid item xs={12}>
                       <TextField
                         label="Email"
                         fullWidth
-                        value={values.email}
+                        value={selectedUser.email}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -190,17 +257,25 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
                         fullWidth
                         value={values.phoneNumber}
                         onChange={handleChange}
+                        error={touched.phoneNumber && errors.phoneNumber}
+                        helperText={touched.phoneNumber && errors.phoneNumber}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                       <Field
                         as={TextField}
-                        name="budgetLimit"
-                        label="Budget Limit (PKR)"
+                        select
+                        name="role"
+                        label="Role"
                         fullWidth
-                        value={values.budgetLimit}
+                        value={values.role}
                         onChange={handleChange}
-                      />
+                        error={touched.role && errors.role}
+                        helperText={touched.role && errors.role}
+                      >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                      </Field>
                     </Grid>
                   </Grid>
                   <DialogActions>
@@ -217,6 +292,14 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
           </DialogContent>
         </Dialog>
       )}
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+        severity={snackbar.severity}
+      />
     </>
   );
 };

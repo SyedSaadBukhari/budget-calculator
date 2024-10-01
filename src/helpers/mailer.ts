@@ -47,7 +47,7 @@ export const sendEmail = async ({
         : `${process.env.DOMAIN}/newPassword?token=${hashedToken}`;
 
     const mailOptions = {
-      from: "saad@gmail.com",
+      from: "admin@gmail.com",
       to: email,
       subject:
         emailType === "VERIFY" ? "Verify your email" : "Reset your password",
