@@ -19,6 +19,8 @@ import {
   TextField,
   Grid,
   Snackbar,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -36,6 +38,9 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
     message: "",
     severity: "success",
   });
+  const [sortBy, setSortBy] = useState("firstName");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -130,7 +135,31 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
     }
   };
 
-  const paginatedUsers = users.slice(
+  const handleSortChange = (event) => {
+    setSortBy(event.target.value);
+  };
+
+  const handleSortOrderChange = (event) => {
+    setSortOrder(event.target.value);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredUsers = users.filter((user) =>
+    Object.values(user).some((value) =>
+      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    if (a[sortBy] < b[sortBy]) return sortOrder === "asc" ? -1 : 1;
+    if (a[sortBy] > b[sortBy]) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  const paginatedUsers = sortedUsers.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -141,6 +170,32 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
 
   return (
     <>
+      <Box display="flex" justifyContent="end" alignItems="center" mb={2}>
+        <Box display="flex" gap={1}>
+          <Select size="small" value={sortBy} onChange={handleSortChange}>
+            <MenuItem value="firstName">Sort by First Name</MenuItem>
+            <MenuItem value="lastName">Sort by Last Name</MenuItem>
+            <MenuItem value="email">Sort by Email</MenuItem>
+            <MenuItem value="role">Sort by Role</MenuItem>
+          </Select>
+          <Select
+            size="small"
+            value={sortOrder}
+            onChange={handleSortOrderChange}
+          >
+            <MenuItem value="asc">Ascending</MenuItem>
+            <MenuItem value="desc">Descending</MenuItem>
+          </Select>
+          <TextField
+            size="small"
+            placeholder="Search users"
+            variant="outlined"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </Box>
+      </Box>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -183,10 +238,10 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
 
       <Box display="flex" justifyContent="space-between" mt={2}>
         <Typography>
-          Showing {paginatedUsers.length} / {users.length}
+          Showing {paginatedUsers.length} / {filteredUsers.length}
         </Typography>
         <Pagination
-          count={Math.ceil(users.length / rowsPerPage)}
+          count={Math.ceil(filteredUsers.length / rowsPerPage)}
           page={currentPage}
           onChange={handlePageChange}
           color="primary"
@@ -273,8 +328,8 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
                         error={touched.role && errors.role}
                         helperText={touched.role && errors.role}
                       >
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
+                        <MenuItem value="user">User</MenuItem>
+                        <MenuItem value="admin">Admin</MenuItem>
                       </Field>
                     </Grid>
                   </Grid>

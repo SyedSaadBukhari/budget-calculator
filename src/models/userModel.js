@@ -73,6 +73,9 @@ const userSchema = new mongoose.Schema({
   website: {
     type: String,
   },
+  profilePicture: {
+    type: String,
+  },
   forgotPasswordToken: String,
   forgotPasswordTokenExpiry: Date,
   verifyToken: String,
