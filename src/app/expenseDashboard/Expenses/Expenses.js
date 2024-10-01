@@ -54,6 +54,10 @@ const ExpensesTable = ({ userId }) => {
     }
   };
 
+  useEffect(() => {
+    fetchBudgetLimit();
+  }, []);
+
   const fetchExpenses = async () => {
     try {
       const response = await fetch("/api/users/expenses", {
@@ -80,7 +84,6 @@ const ExpensesTable = ({ userId }) => {
 
   const handleOpenDialog = (expense = null) => {
     setEditingExpense(expense);
-    fetchBudgetLimit();
     setDialogOpen(true);
   };
 
@@ -165,6 +168,9 @@ const ExpensesTable = ({ userId }) => {
   );
 
   const calculatePercentage = (amount) => {
+    if (totalBudget === 0 || !totalBudget) {
+      return 0; // Prevent Infinity or NaN by returning 0 when totalBudget is invalid
+    }
     return (amount / totalBudget) * 100;
   };
 
@@ -286,7 +292,7 @@ const ExpensesTable = ({ userId }) => {
         </Table>
       </TableContainer>
 
-      <Box display="flex" justifyContent="space-between" mt={2}>
+      <Box display="flex" justifyContent="end" mt={2}>
         <Pagination
           count={Math.ceil(sortedAndFilteredExpenses.length / rowsPerPage)}
           page={currentPage}
