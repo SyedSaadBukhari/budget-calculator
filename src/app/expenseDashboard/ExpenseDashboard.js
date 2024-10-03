@@ -18,8 +18,7 @@ import Analytics from "@mui/icons-material/Analytics";
 import People from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import Avatar from "@mui/material/Avatar";
+import MenuBar from "../../components/MenuBar/MenuBar";
 import ExpensesTable from "./Expenses/Expenses";
 import UsersTable from "./UserManagment/UserManagment";
 import AnalyticsGraph from "./Analytics/Analytics";
@@ -157,10 +156,8 @@ const ExpensesDashboard = () => {
             onClick={() => setIsCollapsed(!isCollapsed)}
             sx={{ color: "black" }}
           ></Button>
-          <Box sx={{ display: "flex", alignItems: "center", p: "16px" }}>
-            <NotificationsIcon sx={{ mr: 2, color: "gray" }} />
-            <Avatar sx={{ width: 40, height: 40 }} />
-          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", p: "16px" }}></Box>
+          <MenuBar />
         </Box>
         <Divider />
 

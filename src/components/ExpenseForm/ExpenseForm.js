@@ -16,7 +16,6 @@ const ExpenseForm = ({
   onExpenseAdded,
   onExpenseUpdated,
   editingExpense,
-  userId,
 }) => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");

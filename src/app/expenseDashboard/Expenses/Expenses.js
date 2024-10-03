@@ -46,7 +46,7 @@ const ExpensesTable = ({ userId }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const [editingExpense, setEditingExpense] = useState(null);
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("desc");
