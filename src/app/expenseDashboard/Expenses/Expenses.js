@@ -16,11 +16,34 @@ import {
   Typography,
   Pagination,
   Snackbar,
+  Alert,
   LinearProgress,
+  FormControl,
+  InputLabel,
+  Divider,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpenseForm from "../../../components/ExpenseForm/ExpenseForm";
+import { styled } from "@mui/material/styles";
+import { Form } from "formik";
+
+const CustomAlert = styled(Alert)(({ theme, severity, color }) => ({
+  backgroundColor:
+    color === "error"
+      ? theme.palette.error.light
+      : theme.palette[severity].light,
+  color:
+    color === "error"
+      ? theme.palette.error.contrastText
+      : theme.palette[severity].contrastText,
+  "& .MuiAlert-icon": {
+    color:
+      color === "error"
+        ? theme.palette.error.main
+        : theme.palette[severity].main,
+  },
+}));
 
 const ExpensesTable = ({ userId }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -34,6 +57,12 @@ const ExpensesTable = ({ userId }) => {
   const [dateFilter, setDateFilter] = useState("");
   const rowsPerPage = 8;
   const [totalBudget, setTotalBudget] = useState(0);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+    color: "",
+  });
 
   const fetchBudgetLimit = async () => {
     try {
@@ -94,6 +123,12 @@ const ExpensesTable = ({ userId }) => {
 
   const handleAddExpense = (newExpense) => {
     setExpenses([newExpense, ...expenses]);
+    setAlert({
+      open: true,
+      message: "Expense added successfully",
+      severity: "success",
+      color: "",
+    });
   };
 
   const handleUpdateExpense = (updatedExpense) => {
@@ -102,6 +137,12 @@ const ExpensesTable = ({ userId }) => {
         expense._id === updatedExpense._id ? updatedExpense : expense
       )
     );
+    setAlert({
+      open: true,
+      message: "Expense updated successfully",
+      severity: "success",
+      color: "",
+    });
   };
 
   const handleDeleteExpense = async (expenseId) => {
@@ -117,9 +158,21 @@ const ExpensesTable = ({ userId }) => {
       }
 
       setExpenses(expenses.filter((expense) => expense._id !== expenseId));
+      setAlert({
+        open: true,
+        message: "Expense deleted successfully",
+        severity: "success",
+        color: "error",
+      });
     } catch (error) {
       console.error(error);
       setError(error.message);
+      setAlert({
+        open: true,
+        message: error.message || "Error deleting expense",
+        severity: "error",
+        color: "",
+      });
     }
   };
 
@@ -169,25 +222,34 @@ const ExpensesTable = ({ userId }) => {
 
   const calculatePercentage = (amount) => {
     if (totalBudget === 0 || !totalBudget) {
-      return 0; // Prevent Infinity or NaN by returning 0 when totalBudget is invalid
+      return 0;
     }
     return (amount / totalBudget) * 100;
   };
 
   return (
-    <>
-      <Box display="flex" justifyContent="flex-end" alignItems="center">
+    <main style={{ padding: " 0 20px" }}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        p="20px 0"
+      >
+        <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+          Expenses{" "}
+        </Typography>
         <Button
           variant="contained"
           onClick={() => handleOpenDialog()}
           style={{
-            backgroundColor: "#6C63FF",
-            marginBottom: "20px",
+            backgroundColor: "#7950f2",
           }}
         >
           Add Expenses
         </Button>
       </Box>
+
+      <Divider />
 
       <ExpenseForm
         open={dialogOpen}
@@ -197,116 +259,138 @@ const ExpensesTable = ({ userId }) => {
         editingExpense={editingExpense}
         userId={userId}
       />
-
-      <Box display="flex" justifyContent="flex-end" alignItems="center" mb={2}>
-        <Box display="flex" gap={1}>
-          <Select size="small" value={sortBy} onChange={handleSortChange}>
-            <MenuItem value="date">Sort by Date</MenuItem>
-            <MenuItem value="amount">Sort by Amount</MenuItem>
-          </Select>
-          <Select
-            size="small"
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
+      <Box p="20px 0">
+        <TableContainer component={Paper}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            padding="0.5rem "
+            backgroundColor="#f7f7f7"
           >
-            <MenuItem value="asc">Ascending</MenuItem>
-            <MenuItem value="desc">Descending</MenuItem>
-          </Select>
-          <TextField
-            size="small"
-            type="date"
-            variant="outlined"
-            value={dateFilter}
-            onChange={handleDateFilterChange}
-          />
-          <TextField
-            size="small"
-            placeholder="Search"
-            variant="outlined"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-        </Box>
-      </Box>
+            <Typography variant="h5">Expenses</Typography>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Expense</TableCell>
-              <TableCell>Total Expenditure</TableCell>
-              <TableCell>Price(PKR)</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedExpenses.map((expense) => (
-              <TableRow key={expense._id}>
-                <TableCell>{expense.title}</TableCell>
-                <TableCell>
-                  <Box display="flex" alignItems="center">
-                    <Box width="100%" mr={1}>
-                      <LinearProgress
-                        variant="determinate"
-                        value={calculatePercentage(expense.amount)}
-                        sx={{
-                          height: 5,
-                          borderRadius: 5,
-                          backgroundColor: "#e0e0e0",
-                          "& .MuiLinearProgress-bar": {
-                            borderRadius: 5,
-                            backgroundColor: "#6C63FF",
-                          },
-                        }}
-                      />
-                    </Box>
-                    <Box minWidth={35}>
-                      <Typography variant="body2" color="textSecondary">
-                        {`${Math.round(calculatePercentage(expense.amount))}%`}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>{expense.amount}</TableCell>
-                <TableCell>
-                  {new Date(expense.date).toLocaleDateString()}
-                </TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleOpenDialog(expense)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="secondary"
-                    onClick={() => handleDeleteExpense(expense._id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
+            <Box display="flex" gap={1}>
+              <Select size="small" value={sortBy} onChange={handleSortChange}>
+                <MenuItem value="date" divider={true}>
+                  Sort by Date
+                </MenuItem>
+                <MenuItem value="amount">Sort by Amount</MenuItem>
+              </Select>
+              <Select
+                size="small"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+              >
+                <MenuItem value="asc">Ascending</MenuItem>
+                <MenuItem value="desc">Descending</MenuItem>
+              </Select>
+              <TextField
+                size="small"
+                type="date"
+                variant="outlined"
+                value={dateFilter}
+                onChange={handleDateFilterChange}
+              />
+              <TextField
+                size="small"
+                placeholder="Search"
+                variant="outlined"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </Box>
+          </Box>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Expense</TableCell>
+                <TableCell>Total Expenditure</TableCell>
+                <TableCell>Price(PKR)</TableCell>
+                <TableCell>Date</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {paginatedExpenses.map((expense) => (
+                <TableRow key={expense._id}>
+                  <TableCell>{expense.title}</TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center">
+                      <Box width="100%" mr={1}>
+                        <LinearProgress
+                          variant="determinate"
+                          value={calculatePercentage(expense.amount)}
+                          sx={{
+                            height: 5,
+                            borderRadius: 5,
+                            backgroundColor: "#e0e0e0",
+                            "& .MuiLinearProgress-bar": {
+                              borderRadius: 5,
+                              backgroundColor: "#6C63FF",
+                            },
+                          }}
+                        />
+                      </Box>
+                      <Box minWidth={35}>
+                        <Typography variant="body2" color="textSecondary">
+                          {`${Math.round(
+                            calculatePercentage(expense.amount)
+                          )}%`}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>{expense.amount}</TableCell>
+                  <TableCell>
+                    {new Date(expense.date).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleOpenDialog(expense)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => handleDeleteExpense(expense._id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
 
       <Box display="flex" justifyContent="end" mt={2}>
         <Pagination
           count={Math.ceil(sortedAndFilteredExpenses.length / rowsPerPage)}
           page={currentPage}
           onChange={handlePageChange}
+          color="secondary"
         />
       </Box>
 
       <Snackbar
-        open={!!error}
+        open={alert.open}
         autoHideDuration={6000}
-        onClose={() => setError("")}
-        message={error}
-      />
-    </>
+        onClose={() => setAlert({ ...alert, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <CustomAlert
+          onClose={() => setAlert({ ...alert, open: false })}
+          severity={alert.severity}
+          color={alert.color}
+          sx={{ width: "100%" }}
+        >
+          {alert.message}
+        </CustomAlert>
+      </Snackbar>
+    </main>
   );
 };
 

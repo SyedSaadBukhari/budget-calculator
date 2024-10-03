@@ -21,12 +21,32 @@ import {
   Snackbar,
   Select,
   MenuItem,
+  Alert,
+  Divider,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import axios from "axios";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { styled } from "@mui/material/styles";
+
+const CustomAlert = styled(Alert)(({ theme, severity, color }) => ({
+  backgroundColor:
+    color === "error"
+      ? theme.palette.error.light
+      : theme.palette[severity].light,
+  color:
+    color === "error"
+      ? theme.palette.error.contrastText
+      : theme.palette[severity].contrastText,
+  "& .MuiAlert-icon": {
+    color:
+      color === "error"
+        ? theme.palette.error.main
+        : theme.palette[severity].main,
+  },
+}));
 
 const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
   const [users, setUsers] = useState([]);
@@ -34,6 +54,12 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+    color: "",
+  });
+  const [alert, setAlert] = useState({
     open: false,
     message: "",
     severity: "success",
@@ -90,7 +116,7 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
           )
         );
         handleDialogClose();
-        setSnackbar({
+        setAlert({
           open: true,
           message: "User updated successfully",
           severity: "success",
@@ -116,10 +142,11 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
           setUsers((prevUsers) =>
             prevUsers.filter((user) => user.id !== userId)
           );
-          setSnackbar({
+          setAlert({
             open: true,
             message: "User deleted successfully",
             severity: "success",
+            color: "error",
           });
         } else {
           throw new Error(response.data.error || "Failed to delete user");
@@ -130,6 +157,7 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
           open: true,
           message: error.message || "Error deleting user",
           severity: "error",
+          color: "",
         });
       }
     }
@@ -169,72 +197,86 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
   }
 
   return (
-    <>
-      <Box display="flex" justifyContent="end" alignItems="center" mb={2}>
-        <Box display="flex" gap={1}>
-          <Select size="small" value={sortBy} onChange={handleSortChange}>
-            <MenuItem value="firstName">Sort by First Name</MenuItem>
-            <MenuItem value="lastName">Sort by Last Name</MenuItem>
-            <MenuItem value="email">Sort by Email</MenuItem>
-            <MenuItem value="role">Sort by Role</MenuItem>
-          </Select>
-          <Select
-            size="small"
-            value={sortOrder}
-            onChange={handleSortOrderChange}
-          >
-            <MenuItem value="asc">Ascending</MenuItem>
-            <MenuItem value="desc">Descending</MenuItem>
-          </Select>
-          <TextField
-            size="small"
-            placeholder="Search users"
-            variant="outlined"
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-        </Box>
-      </Box>
+    <main style={{ padding: " 0 20px" }}>
+      <Typography variant="h4" sx={{ fontWeight: "bold", padding: "20px 0 " }}>
+        Users{" "}
+      </Typography>
+      <Divider />
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>First Name</TableCell>
-              <TableCell>Last Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Number</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedUsers.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell>{row.firstName}</TableCell>
-                <TableCell>{row.lastName}</TableCell>
-                <TableCell>{row.email}</TableCell>
-                <TableCell>{row.number}</TableCell>
-                <TableCell>{row.role}</TableCell>
-                <TableCell>
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleEditClick(row)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color="secondary"
-                    onClick={() => handleDeleteUser(row.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
+      <Box p="20px 0">
+        <TableContainer component={Paper}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            padding="0.5rem "
+            backgroundColor="#f7f7f7"
+          >
+            <Typography variant="h5">Users </Typography>
+
+            <Box display="flex" gap={1}>
+              <Select size="small" value={sortBy} onChange={handleSortChange}>
+                <MenuItem value="firstName">Sort by First Name</MenuItem>
+                <MenuItem value="lastName">Sort by Last Name</MenuItem>
+                <MenuItem value="email">Sort by Email</MenuItem>
+                <MenuItem value="role">Sort by Role</MenuItem>
+              </Select>
+              <Select
+                size="small"
+                value={sortOrder}
+                onChange={handleSortOrderChange}
+              >
+                <MenuItem value="asc">Ascending</MenuItem>
+                <MenuItem value="desc">Descending</MenuItem>
+              </Select>
+              <TextField
+                size="small"
+                placeholder="Search users"
+                variant="outlined"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+            </Box>
+          </Box>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>First Name</TableCell>
+                <TableCell>Last Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Number</TableCell>
+                <TableCell>Role</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {paginatedUsers.map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.firstName}</TableCell>
+                  <TableCell>{row.lastName}</TableCell>
+                  <TableCell>{row.email}</TableCell>
+                  <TableCell>{row.number}</TableCell>
+                  <TableCell>{row.role}</TableCell>
+                  <TableCell>
+                    <IconButton
+                      color="primary"
+                      onClick={() => handleEditClick(row)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => handleDeleteUser(row.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
 
       <Box display="flex" justifyContent="space-between" mt={2}>
         <Typography>
@@ -244,7 +286,7 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
           count={Math.ceil(filteredUsers.length / rowsPerPage)}
           page={currentPage}
           onChange={handlePageChange}
-          color="primary"
+          color="secondary"
         />
       </Box>
 
@@ -349,13 +391,21 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
       )}
 
       <Snackbar
-        open={snackbar.open}
+        open={alert.open}
         autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        message={snackbar.message}
-        severity={snackbar.severity}
-      />
-    </>
+        onClose={() => setAlert({ ...alert, open: false })}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      >
+        <CustomAlert
+          onClose={() => setAlert({ ...alert, open: false })}
+          severity={alert.severity}
+          color={alert.color}
+          sx={{ width: "100%" }}
+        >
+          {alert.message}
+        </CustomAlert>
+      </Snackbar>
+    </main>
   );
 };
 
