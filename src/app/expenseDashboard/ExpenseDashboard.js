@@ -28,7 +28,7 @@ import Logout from "../../components/Logout/Logout";
 const ExpensesDashboard = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selectedSection, setSelectedSection] = useState("Expenses");
-  const [expenses, setExpenses] = useState([]);
+  const [expenses] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 8;
   const [isAdmin, setIsAdmin] = useState(false);

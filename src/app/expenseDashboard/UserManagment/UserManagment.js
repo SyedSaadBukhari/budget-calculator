@@ -53,7 +53,7 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [snackbar, setSnackbar] = useState({
+  const [, setSnackbar] = useState({
     open: false,
     message: "",
     severity: "success",
