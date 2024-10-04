@@ -13,6 +13,7 @@ import {
   Typography,
   Link,
   Alert,
+  Divider,
 } from "@mui/material";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -35,8 +36,8 @@ const Login = () => {
     <main className="login-container">
       <Title />
 
-      <div className="container">
-        <div className="form-container">
+      <section className="container">
+        <section className="form-container">
           <Typography variant="h3" gutterBottom>
             Welcome Back!
           </Typography>
@@ -130,11 +131,12 @@ const Login = () => {
               </Form>
             )}
           </Formik>
-        </div>
-        <div className="image-container">
+        </section>
+        <Divider orientation="vertical" variant="middle" flexItem />
+        <article className="image-container">
           <img src="/images/signup.png" alt="Illustration" className="image" />
-        </div>
-      </div>
+        </article>
+      </section>
     </main>
   );
 };

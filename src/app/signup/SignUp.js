@@ -4,7 +4,7 @@ import React from "react";
 
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { TextField, Button, Typography, Link } from "@mui/material";
+import { TextField, Button, Typography, Link, Divider } from "@mui/material";
 import Title from "../../components/Title/Title";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -25,8 +25,8 @@ const SignUp = () => {
     <main className="signup-container">
       <Title />
 
-      <div className="container">
-        <div className="form-container">
+      <section className="container">
+        <section className="form-container">
           <Typography variant="h3" gutterBottom>
             Sign Up
           </Typography>
@@ -165,11 +165,12 @@ const SignUp = () => {
               </Form>
             )}
           </Formik>
-        </div>
-        <div className="image-container">
+        </section>
+        <Divider orientation="vertical" variant="middle" flexItem />
+        <article className="image-container">
           <img src="/images/signup.png" alt="Illustration" className="image" />
-        </div>
-      </div>
+        </article>
+      </section>
     </main>
   );
 };

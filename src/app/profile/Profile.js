@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { Box, Typography, Tabs, Tab, Grid } from "@mui/material";
 import BasicInfo from "../../components/User/BasicInfo/BasicInfo";
 import About from "../../components/User/About/About";
@@ -16,28 +15,46 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (_event, newValue) => {
     setSelectedTab(newValue);
   };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await axios.get("/api/users/getUser", {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get("/api/users/getUser", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setUser(response.data.user);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateProfilePicture = async (base64Image) => {
+    try {
+      await axios.post(
+        "/api/users/profilePicture",
+        { profilePicture: base64Image },
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        });
-        setUser(response.data.user);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+        }
+      );
 
-    fetchUserData();
-  }, []);
+      fetchUserData();
+    } catch (err) {
+      console.error("Error updating profile picture:", err);
+    }
+  };
 
   if (loading) return <Typography>Loading...</Typography>;
   if (error) return <Typography color="error">{error}</Typography>;
@@ -69,7 +86,10 @@ const Profile = () => {
         {selectedTab === 0 && (
           <Grid container spacing={3} mt={2}>
             <Grid item xs={12} md={4}>
-              <BasicInfo user={user} />
+              <BasicInfo
+                user={user}
+                onUpdateProfilePicture={handleUpdateProfilePicture}
+              />
             </Grid>
             <Grid item xs={12} md={8}>
               <About user={user} />
@@ -82,7 +102,10 @@ const Profile = () => {
           <Box mt={2}>
             <Grid container spacing={3} mt={2}>
               <Grid item xs={12} md={4}>
-                <BasicInfo user={user} />
+                <BasicInfo
+                  user={user}
+                  onUpdateProfilePicture={handleUpdateProfilePicture}
+                />
               </Grid>
               <Grid item xs={12} md={8}>
                 <AccountForm user={user} />

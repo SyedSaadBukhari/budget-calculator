@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -17,28 +17,91 @@ import {
   Paper,
   Typography,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 
-const data = [
-  { name: "Jan", value: 70 },
-  { name: "Feb", value: 80 },
-  { name: "Mar", value: 60 },
-  { name: "Apr", value: 40 },
-  { name: "May", value: 70 },
-  { name: "Jun", value: 20 },
-  { name: "Jul", value: 40 },
-  { name: "Aug", value: 60 },
-  { name: "Sep", value: 70 },
-  { name: "Oct", value: 90 },
-  { name: "Nov", value: 80 },
-  { name: "Dec", value: 20 },
-];
-
 const AnalyticsGraph = () => {
+  const [expenses, setExpenses] = useState([]);
+  const [chartData, setChartData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState(12); // Default to 12 months
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
+
+  useEffect(() => {
+    if (expenses.length > 0) {
+      processExpenses();
+    }
+  }, [expenses, timeRange]);
+
+  const fetchExpenses = async () => {
+    try {
+      const response = await fetch("/api/users/expenses", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch expenses");
+      }
+
+      const data = await response.json();
+      setExpenses(data.expenses);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+      setIsLoading(false);
+    }
+  };
+
+  const processExpenses = () => {
+    const now = new Date();
+    const monthsAgo = new Date(now.setMonth(now.getMonth() - timeRange));
+
+    const filteredExpenses = expenses.filter(
+      (expense) => new Date(expense.date) >= monthsAgo
+    );
+
+    const monthlyTotals = filteredExpenses.reduce((acc, expense) => {
+      const date = new Date(expense.date);
+      const monthYear = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}`;
+
+      if (!acc[monthYear]) {
+        acc[monthYear] = 0;
+      }
+      acc[monthYear] += expense.amount;
+      return acc;
+    }, {});
+
+    const sortedData = Object.entries(monthlyTotals)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, total]) => ({
+        name: new Date(date).toLocaleString("default", {
+          month: "short",
+          year: "numeric",
+        }),
+        value: total,
+      }));
+
+    setChartData(sortedData);
+  };
+
+  const handleTimeRangeChange = (event) => {
+    setTimeRange(Number(event.target.value));
+  };
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
   return (
-    <main style={{ padding: " 0 20px" }}>
-      <Typography variant="h4" sx={{ fontWeight: "bold", padding: "20px 0 " }}>
-        Analytics{" "}
+    <main style={{ padding: "0 20px" }}>
+      <Typography variant="h4" sx={{ fontWeight: "bold", padding: "20px 0" }}>
+        Analytics
       </Typography>
       <Divider />
 
@@ -48,27 +111,29 @@ const AnalyticsGraph = () => {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            padding="0.5rem "
+            padding="0.5rem"
             backgroundColor="#f7f7f7"
           >
-            <Typography variant="h5">Expenses </Typography>
+            <Typography variant="h5">Expenses Over Time</Typography>
 
             <Box display="flex" gap={1}>
-              <Select size="small">
-                <MenuItem value="date" divider={true}>
-                  Sort by Date
-                </MenuItem>
-                <MenuItem value="amount">Sort by Amount</MenuItem>
+              <Select
+                size="small"
+                value={timeRange}
+                onChange={handleTimeRangeChange}
+              >
+                <MenuItem value={6}>Last 6 Months</MenuItem>
+                <MenuItem value={12}>Last 12 Months</MenuItem>
               </Select>
             </Box>
           </Box>
           <div style={{ width: "100%", height: 500 }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={data}
+                data={chartData}
                 margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="1 1" />
+                <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
@@ -76,6 +141,7 @@ const AnalyticsGraph = () => {
                 <Line
                   type="monotone"
                   dataKey="value"
+                  name="Total Expenses"
                   stroke="#7539ff"
                   activeDot={{ r: 8 }}
                   dot={{ r: 4, fill: "#7539ff" }}

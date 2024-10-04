@@ -4,7 +4,14 @@ import React, { useState } from "react";
 
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { Button, TextField, Typography, Link, Alert } from "@mui/material";
+import {
+  Button,
+  TextField,
+  Typography,
+  Link,
+  Alert,
+  Divider,
+} from "@mui/material";
 import axios from "axios";
 import Title from "../../components/Title/Title";
 
@@ -21,8 +28,8 @@ const Reset = () => {
   return (
     <main className="reset-container">
       <Title />
-      <div className="container">
-        <div className="form-container">
+      <section className="container">
+        <section className="form-container">
           <Typography variant="h5" gutterBottom>
             Reset Password
           </Typography>
@@ -97,15 +104,16 @@ const Reset = () => {
               </Form>
             )}
           </Formik>
-        </div>
-        <div className="image-container">
+        </section>
+        <Divider orientation="vertical" variant="middle" flexItem />
+        <article className="image-container">
           <img
             src="/images/budget-tracker-Illustration.png"
             alt="Illustration"
             className="image"
           />
-        </div>
-      </div>
+        </article>
+      </section>
     </main>
   );
 };
