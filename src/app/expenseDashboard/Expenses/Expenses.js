@@ -23,6 +23,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ExpenseForm from "../../../components/ExpenseForm/ExpenseForm";
+import DeleteConfirmationDialog from "../../../components/DeleteConfirmationDialog/DeleteConfirmationDialog";
 import { styled } from "@mui/material/styles";
 
 const CustomAlert = styled(Alert)(({ theme, severity, color }) => ({
@@ -54,6 +55,8 @@ const ExpensesTable = ({ userId }) => {
   const [dateFilter, setDateFilter] = useState("");
   const rowsPerPage = 8;
   const [totalBudget, setTotalBudget] = useState(0);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState(null);
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -142,7 +145,7 @@ const ExpensesTable = ({ userId }) => {
     });
   };
 
-  const handleDeleteExpense = async (expenseId) => {
+  const confirmDeleteExpense = async (expenseId) => {
     try {
       const response = await fetch(`/api/users/expenses/${expenseId}`, {
         method: "DELETE",
@@ -171,6 +174,11 @@ const ExpensesTable = ({ userId }) => {
         color: "",
       });
     }
+  };
+
+  const handleDeleteExpense = async (expenseId) => {
+    setSelectedExpense(expenses.find((expense) => expense._id === expenseId));
+    setOpenDeleteDialog(true);
   };
 
   const handlePageChange = (event, page) => {
@@ -319,7 +327,7 @@ const ExpensesTable = ({ userId }) => {
                           variant="determinate"
                           value={calculatePercentage(expense.amount)}
                           sx={{
-                            height: 5,
+                            height: 10,
                             borderRadius: 5,
                             backgroundColor: "#e0e0e0",
                             "& .MuiLinearProgress-bar": {
@@ -371,6 +379,14 @@ const ExpensesTable = ({ userId }) => {
           color="secondary"
         />
       </Box>
+
+      <DeleteConfirmationDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={confirmDeleteExpense}
+        item={selectedExpense}
+        type="expense"
+      />
 
       <Snackbar
         open={alert.open}

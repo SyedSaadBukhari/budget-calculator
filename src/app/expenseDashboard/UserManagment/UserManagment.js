@@ -30,6 +30,7 @@ import axios from "axios";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { styled } from "@mui/material/styles";
+import DeleteConfirmationDialog from "../../../components/DeleteConfirmationDialog/DeleteConfirmationDialog";
 
 const CustomAlert = styled(Alert)(({ theme, severity, color }) => ({
   backgroundColor:
@@ -53,12 +54,7 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-    color: "",
-  });
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -88,8 +84,14 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
     setOpenEditDialog(true);
   };
 
+  const handleDeleteClick = (user) => {
+    setSelectedUser(user);
+    setOpenDeleteDialog(true);
+  };
+
   const handleDialogClose = () => {
     setOpenEditDialog(false);
+    setOpenDeleteDialog(false);
     setSelectedUser(null);
   };
 
@@ -126,7 +128,7 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
       }
     } catch (error) {
       console.error("Error updating user:", error);
-      setSnackbar({
+      setAlert({
         open: true,
         message: error.message || "Error updating user",
         severity: "error",
@@ -135,32 +137,29 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        const response = await axios.delete(`/api/users/deleteUser/${userId}`);
-        if (response.data.success) {
-          setUsers((prevUsers) =>
-            prevUsers.filter((user) => user.id !== userId)
-          );
-          setAlert({
-            open: true,
-            message: "User deleted successfully",
-            severity: "success",
-            color: "error",
-          });
-        } else {
-          throw new Error(response.data.error || "Failed to delete user");
-        }
-      } catch (error) {
-        console.error("Error deleting user:", error);
-        setSnackbar({
+    try {
+      const response = await axios.delete(`/api/users/deleteUser/${userId}`);
+      if (response.data.success) {
+        setUsers((prevUsers) => prevUsers.filter((user) => user.id !== userId));
+        setAlert({
           open: true,
-          message: error.message || "Error deleting user",
-          severity: "error",
-          color: "",
+          message: "User deleted successfully",
+          severity: "success",
+          color: "error",
         });
+      } else {
+        throw new Error(response.data.error || "Failed to delete user");
       }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      setAlert({
+        open: true,
+        message: error.message || "Error deleting user",
+        severity: "error",
+        color: "",
+      });
     }
+    handleDialogClose();
   };
 
   const handleSortChange = (event) => {
@@ -266,7 +265,7 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
                     </IconButton>
                     <IconButton
                       color="secondary"
-                      onClick={() => handleDeleteUser(row.id)}
+                      onClick={() => handleDeleteClick(row)}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -300,12 +299,14 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
                 lastName: selectedUser.lastName || "",
                 phoneNumber: selectedUser.number || "",
                 role: selectedUser.role || "user",
+                budgetLimit: selectedUser.budgetLimit || 0,
               }}
               validationSchema={Yup.object({
                 firstName: Yup.string().required("First name is required"),
                 lastName: Yup.string().required("Last name is required"),
                 phoneNumber: Yup.string().required("Phone number is required"),
                 role: Yup.string().oneOf(["user", "admin"], "Invalid role"),
+                budgetLimit: Yup.number().min(0, "Invalid budget limit"),
               })}
               onSubmit={handleFormSubmit}
             >
@@ -389,6 +390,14 @@ const UsersTable = ({ currentPage, rowsPerPage, handlePageChange }) => {
           </DialogContent>
         </Dialog>
       )}
+
+      <DeleteConfirmationDialog
+        open={openDeleteDialog}
+        onClose={handleDialogClose}
+        onConfirm={handleDeleteUser}
+        item={selectedUser}
+        type="user"
+      />
 
       <Snackbar
         open={alert.open}
