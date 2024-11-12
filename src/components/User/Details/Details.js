@@ -1,74 +1,43 @@
 import React from "react";
 
-import { Card, CardContent, Typography, Grid } from "@mui/material";
-
-import "./details.scss";
-
 const Details = ({ user }) => {
   if (!user) return null;
-  console.log(user);
+
+  const DetailItem = ({ label, value }) => (
+    <div className="mb-4">
+      <dt className="text-sm font-medium text-gray-700 mb-1">{label}</dt>
+      <dd className="text-sm text-gray-900">{value}</dd>
+    </div>
+  );
 
   return (
-    <Card className="detailsCard">
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Personal Details
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <Typography variant="subtitle2" className="personalDetailsTitle">
-              Full Name
-            </Typography>
-            <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
+    <section className="bg-white rounded-lg overflow-hidden mb-6">
+      <header className="bg-gray-50 px-6 py-3">
+        <h2 className="text-lg font-medium text-gray-900">Personal Details</h2>
+      </header>
+      <main className="px-6 py-4">
+        <dl className="grid grid-cols-2 gap-6">
+          <div>
+            <DetailItem
+              label="Full Name"
+              value={`${user.firstName} ${user.lastName}`}
+            />
+            <DetailItem label="Gender" value={user.gender} />
+            <DetailItem label="Email" value={user.email} />
+            <DetailItem label="Education" value={user.education} />
+            <DetailItem label="Address" value={user.completeAddress} />
+          </div>
 
-            <Typography variant="subtitle2" className="detailItem">
-              Gender
-            </Typography>
-            <Typography variant="body1">{user.gender}</Typography>
-
-            <Typography variant="subtitle2" className="detailItem">
-              Email
-            </Typography>
-            <Typography variant="body1">{user.email}</Typography>
-
-            <Typography variant="subtitle2" className="detailItem">
-              Education
-            </Typography>
-            <Typography variant="body1">{user.education}</Typography>
-
-            <Typography variant="subtitle2" className="detailItem">
-              Address
-            </Typography>
-            <Typography variant="body1">{user.completeAddress}</Typography>
-          </Grid>
-
-          <Grid item xs={6}>
-            <Typography variant="subtitle2">Father Name</Typography>
-            <Typography variant="body1">{user.fatherName}</Typography>
-
-            <Typography variant="subtitle2" className="detailItem">
-              Phone
-            </Typography>
-            <Typography variant="body1">{user.phoneNumber}</Typography>
-
-            <Typography variant="subtitle2" className="detailItem">
-              Zip Code
-            </Typography>
-            <Typography variant="body1">{user.zipCode}</Typography>
-
-            <Typography variant="subtitle2" className="detailItem">
-              Date of Birth
-            </Typography>
-            <Typography variant="body1">{user.dateOfBirth}</Typography>
-
-            <Typography variant="subtitle2" className="detailItem">
-              Budget Limit
-            </Typography>
-            <Typography variant="body1">{user.budgetLimit}</Typography>
-          </Grid>
-        </Grid>
-      </CardContent>
-    </Card>
+          <div>
+            <DetailItem label="Father Name" value={user.fatherName} />
+            <DetailItem label="Phone" value={user.phoneNumber} />
+            <DetailItem label="Zip Code" value={user.zipCode} />
+            <DetailItem label="Date of Birth" value={user.dateOfBirth} />
+            <DetailItem label="Budget Limit" value={user.budgetLimit} />
+          </div>
+        </dl>
+      </main>
+    </section>
   );
 };
 

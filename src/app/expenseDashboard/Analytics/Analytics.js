@@ -24,7 +24,7 @@ const AnalyticsGraph = () => {
   const [expenses, setExpenses] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState(12); // Default to 12 months
+  const [timeRange, setTimeRange] = useState(12);
 
   useEffect(() => {
     fetchExpenses();
@@ -114,7 +114,7 @@ const AnalyticsGraph = () => {
             padding="0.5rem"
             backgroundColor="#f7f7f7"
           >
-            <Typography variant="h5">Expenses Over Time</Typography>
+            <Typography variant="h5">Expenses</Typography>
 
             <Box display="flex" gap={1}>
               <Select
